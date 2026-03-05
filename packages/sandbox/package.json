@@ -1,0 +1,25 @@
+{
+	"name": "pi-extension-sandbox",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"pi": {
+		"extensions": ["./index.ts"]
+	},
+	"scripts": {
+		"test": "vitest run --config ../../vitest.config.ts",
+		"clean": "echo 'nothing to clean'",
+		"build": "echo 'nothing to build'"
+	},
+	"dependencies": {
+		"@anthropic-ai/sandbox-runtime": "github:sysid/sandbox-runtime#sysid"
+	},
+	"peerDependencies": {
+		"@mariozechner/pi-coding-agent": "*"
+	},
+	"peerDependenciesMeta": {
+		"@mariozechner/pi-coding-agent": {
+			"optional": true
+		}
+	}
+}

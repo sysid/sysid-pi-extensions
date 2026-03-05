@@ -1,0 +1,21 @@
+{
+	"name": "pi-extension-vim-editor",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"pi": {
+		"extensions": ["./index.ts"]
+	},
+	"peerDependencies": {
+		"@mariozechner/pi-coding-agent": "*",
+		"@mariozechner/pi-tui": "*"
+	},
+	"peerDependenciesMeta": {
+		"@mariozechner/pi-coding-agent": {
+			"optional": true
+		},
+		"@mariozechner/pi-tui": {
+			"optional": true
+		}
+	}
+}

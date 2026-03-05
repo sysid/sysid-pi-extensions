@@ -1,0 +1,13 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@mariozechner/pi-coding-agent": [
+				"../../forked/pi-mono/packages/coding-agent/dist/index.d.ts"
+			],
+			"@mariozechner/pi-tui": ["../../forked/pi-mono/packages/tui/dist/index.d.ts"]
+		}
+	},
+	"include": ["packages/*/index.ts", "packages/*/*.ts"]
+}

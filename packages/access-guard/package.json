@@ -1,0 +1,17 @@
+{
+	"name": "pi-extension-access-guard",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"pi": {
+		"extensions": ["./index.ts"]
+	},
+	"peerDependencies": {
+		"@mariozechner/pi-coding-agent": "*"
+	},
+	"peerDependenciesMeta": {
+		"@mariozechner/pi-coding-agent": {
+			"optional": true
+		}
+	}
+}
