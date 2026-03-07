@@ -43,6 +43,20 @@ SETUP:  ## ############################################################
 install:  ## install all dependencies
 	npm install
 
+.PHONY: use-sysid-sandbox
+use-sysid-sandbox:  ## switch sandbox-runtime to sysid fork (local dev)
+	cd packages/sandbox && npm pkg set "dependencies.@anthropic-ai/sandbox-runtime"="github:sysid/sandbox-runtime#sysid"
+	npm install
+	git update-index --skip-worktree packages/sandbox/package.json
+	@echo "Switched to sysid fork. package.json hidden from git."
+
+.PHONY: use-official-sandbox
+use-official-sandbox:  ## switch sandbox-runtime to official npm package
+	git update-index --no-skip-worktree packages/sandbox/package.json
+	git checkout -- packages/sandbox/package.json
+	npm install
+	@echo "Switched to official npm package."
+
 ################################################################################
 # Versioning \
 VERSIONING:  ## ############################################################

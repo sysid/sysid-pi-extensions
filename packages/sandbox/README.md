@@ -75,6 +75,13 @@ built-in file tools before they reach the Node.js `fs` module. Enforces the same
 2. Run `npm install` at the repo root
 3. Linux additionally requires: `bubblewrap`, `socat`, `ripgrep`
 
+To use a custom fork of `@anthropic-ai/sandbox-runtime` instead of the official npm package:
+
+```bash
+make use-sysid-sandbox    # switch to sysid fork (hides change from git)
+make use-official-sandbox  # switch back to official npm package
+```
+
 ## Usage
 
 ```bash
@@ -239,3 +246,8 @@ sandbox config is enabled (even if OS sandboxing is unavailable).
 files with the `com.apple.provenance` extended attribute. Subsequent sandboxed processes may get
 `EPERM` when reading those files. Fix with `xattr -r -d com.apple.provenance node_modules/` or
 reinstall outside of a sandbox.
+
+
+## Ackowledgements
+Based on code from [badlogic/pi-mono](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/examples/extensions/sandbox/index.ts)
+by Mario Zechner, used under the [MIT License](https://github.com/badlogic/pi-mono/blob/main/LICENSE).

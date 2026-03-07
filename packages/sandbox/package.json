@@ -12,7 +12,7 @@
 		"build": "echo 'nothing to build'"
 	},
 	"dependencies": {
-		"@anthropic-ai/sandbox-runtime": "github:sysid/sandbox-runtime#sysid"
+		"@anthropic-ai/sandbox-runtime": "^0.0.38"
 	},
 	"peerDependencies": {
 		"@mariozechner/pi-coding-agent": "*"
