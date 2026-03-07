@@ -41,14 +41,16 @@ import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { SandboxManager, type SandboxRuntimeConfig } from "@anthropic-ai/sandbox-runtime";
+import { type SandboxAskCallback, SandboxManager, type SandboxRuntimeConfig } from "@anthropic-ai/sandbox-runtime";
 import {
 	type BashOperations,
 	createBashTool,
 	type ExtensionAPI,
 	isToolCallEventType,
 } from "@mariozechner/pi-coding-agent";
-import { isReadBlocked, isWriteBlocked } from "./path-guard.js";
+import { expandPath, isReadBlocked, isUnderDirectory, isWriteBlocked } from "./path-guard.js";
+import { type PromptChoice, promptDomainBlock, promptWriteBlock } from "./prompt.js";
+import { addDomainToConfig, addWritePathToConfig, createSessionState } from "./session-state.js";
 
 interface SandboxConfig extends SandboxRuntimeConfig {
 	enabled?: boolean;
@@ -218,6 +220,60 @@ export default function (pi: ExtensionAPI) {
 	let sandboxFailed = false;
 	let toolGuardEnabled = false;
 	let activeConfig: SandboxConfig = DEFAULT_CONFIG;
+	let sessionState = createSessionState();
+
+	function getConfigPaths(cwd: string) {
+		return {
+			globalPath: join(homedir(), ".pi", "agent", "sandbox.json"),
+			projectPath: join(cwd, ".pi", "sandbox.json"),
+		};
+	}
+
+	function domainMatchesPattern(domain: string, pattern: string): boolean {
+		if (pattern.startsWith("*.")) {
+			const base = pattern.slice(2);
+			return domain === base || domain.endsWith(`.${base}`);
+		}
+		return domain === pattern;
+	}
+
+	function isSessionAllowedWrite(filePath: string, cwd: string): boolean {
+		for (const allowed of sessionState.writePaths) {
+			const expanded = expandPath(allowed, cwd);
+			if (isUnderDirectory(filePath, expanded)) return true;
+		}
+		return false;
+	}
+
+	async function applyAllowance(
+		choice: PromptChoice,
+		type: "domain" | "writePath",
+		value: string,
+		cwd: string,
+	): Promise<void> {
+		const { globalPath, projectPath } = getConfigPaths(cwd);
+		if (type === "domain") {
+			sessionState.domains.push(value);
+			if (choice === "project") addDomainToConfig(projectPath, value);
+			if (choice === "global") addDomainToConfig(globalPath, value);
+		} else {
+			sessionState.writePaths.push(value);
+			if (choice === "project") addWritePathToConfig(projectPath, value);
+			if (choice === "global") addWritePathToConfig(globalPath, value);
+		}
+		if (choice !== "session") {
+			activeConfig = loadConfig(cwd);
+			if (sandboxInitialized) {
+				SandboxManager.updateConfig({
+					network: activeConfig.network,
+					filesystem: activeConfig.filesystem,
+					ignoreViolations: activeConfig.ignoreViolations,
+					enableWeakerNestedSandbox: activeConfig.enableWeakerNestedSandbox,
+					enableWeakerNetworkIsolation: activeConfig.enableWeakerNetworkIsolation,
+				});
+			}
+		}
+	}
 
 	pi.registerTool({
 		...localBash,
@@ -268,6 +324,23 @@ export default function (pi: ExtensionAPI) {
 				if (!path) return;
 				const result = isWriteBlocked(path as string, activeConfig, ctx.cwd);
 				if (result.blocked) {
+					// denyWrite matches are always hard-blocked, never prompted
+					if (result.reason?.includes("matches restricted pattern")) {
+						ctx.ui.notify(`Sandbox blocked write: ${path}`, "warning");
+						return { block: true, reason: result.reason };
+					}
+					// Check session allowances before prompting
+					if (isSessionAllowedWrite(path as string, ctx.cwd)) {
+						return;
+					}
+					// Prompt if UI available
+					if (ctx.hasUI) {
+						const choice = await promptWriteBlock(ctx.ui, path as string);
+						if (choice !== "abort") {
+							await applyAllowance(choice, "writePath", path as string, ctx.cwd);
+							return;
+						}
+					}
 					ctx.ui.notify(`Sandbox blocked write: ${path}`, "warning");
 					return { block: true, reason: result.reason };
 				}
@@ -277,6 +350,8 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	pi.on("session_start", async (_event, ctx) => {
+		sessionState = createSessionState();
+
 		const noSandbox = pi.getFlag("no-sandbox") as boolean;
 
 		if (noSandbox) {
@@ -309,14 +384,27 @@ export default function (pi: ExtensionAPI) {
 			return;
 		}
 
+		const askCallback: SandboxAskCallback | undefined = ctx.hasUI
+			? async ({ host }) => {
+					if (sessionState.domains.some((d) => domainMatchesPattern(host, d))) return true;
+					const choice = await promptDomainBlock(ctx.ui, host);
+					if (choice === "abort") return false;
+					await applyAllowance(choice, "domain", host, ctx.cwd);
+					return true;
+				}
+			: undefined;
+
 		try {
-			await SandboxManager.initialize({
-				network: activeConfig.network,
-				filesystem: activeConfig.filesystem,
-				ignoreViolations: activeConfig.ignoreViolations,
-				enableWeakerNestedSandbox: activeConfig.enableWeakerNestedSandbox,
-				enableWeakerNetworkIsolation: activeConfig.enableWeakerNetworkIsolation,
-			});
+			await SandboxManager.initialize(
+				{
+					network: activeConfig.network,
+					filesystem: activeConfig.filesystem,
+					ignoreViolations: activeConfig.ignoreViolations,
+					enableWeakerNestedSandbox: activeConfig.enableWeakerNestedSandbox,
+					enableWeakerNetworkIsolation: activeConfig.enableWeakerNetworkIsolation,
+				},
+				askCallback,
+			);
 
 			sandboxEnabled = true;
 			sandboxInitialized = true;
@@ -400,6 +488,13 @@ export default function (pi: ExtensionAPI) {
 				for (const [pattern, paths] of Object.entries(activeConfig.ignoreViolations)) {
 					lines.push(`  ${pattern}: ${paths.join(", ")}`);
 				}
+			}
+
+			if (sessionState.domains.length > 0) {
+				lines.push("", "Session Allowed Domains:", `  ${sessionState.domains.join(", ")}`);
+			}
+			if (sessionState.writePaths.length > 0) {
+				lines.push("", "Session Allowed Write Paths:", `  ${sessionState.writePaths.join(", ")}`);
 			}
 
 			ctx.ui.notify(lines.join("\n"), "info");

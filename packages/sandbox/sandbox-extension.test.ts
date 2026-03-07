@@ -25,6 +25,7 @@ const { mockSandboxManager } = vi.hoisted(() => ({
 	mockSandboxManager: {
 		initialize: vi.fn(),
 		reset: vi.fn(),
+		updateConfig: vi.fn(),
 		wrapWithSandbox: vi.fn(async (command: string) => command),
 	},
 }));
@@ -63,6 +64,7 @@ interface CapturedHandlers {
 interface SandboxManagerMock {
 	initialize: ReturnType<typeof vi.fn>;
 	reset: ReturnType<typeof vi.fn>;
+	updateConfig: ReturnType<typeof vi.fn>;
 	wrapWithSandbox: ReturnType<typeof vi.fn>;
 }
 
@@ -144,6 +146,7 @@ describe("sandbox extension tool guard", () => {
 
 		expect(sandboxManager.initialize).toHaveBeenCalledWith(
 			expect.objectContaining({ enableWeakerNetworkIsolation: true }),
+			expect.any(Function),
 		);
 	});
 
@@ -197,5 +200,185 @@ describe("sandbox extension tool guard", () => {
 
 		const result = await toolCall(makeEvent("read", { path: "/restricted/file.txt" }), ctx);
 		expect(result).toBeUndefined();
+	});
+
+	it("prompts for write to non-allowed path and allows on session choice", async () => {
+		const cwd = "/work";
+		mockConfig(cwd, {
+			enabled: true,
+			filesystem: {
+				denyRead: [],
+				allowWrite: ["."],
+				denyWrite: [],
+			},
+		});
+
+		const { sessionStart, toolCall } = captureHandlers(false);
+		const ctx = {
+			hasUI: true,
+			cwd,
+			ui: {
+				notify: vi.fn(),
+				setStatus: vi.fn(),
+				select: vi.fn(async () => "Allow for this session only"),
+				theme: { fg: vi.fn((_: string, text: string) => text) },
+			},
+			theme: { fg: vi.fn((_: string, text: string) => text) },
+		} as unknown as ExtensionContext;
+
+		await sessionStart({ type: "session_start" }, ctx);
+
+		// /outside is not under allowWrite "." = "/work"
+		const result = await toolCall(makeEvent("write", { path: "/outside/file.txt" }), ctx);
+		expect(result).toBeUndefined(); // allowed after prompt
+		expect(ctx.ui.select).toHaveBeenCalled();
+	});
+
+	it("hard-blocks write when no UI available", async () => {
+		const cwd = "/work";
+		mockConfig(cwd, {
+			enabled: true,
+			filesystem: {
+				denyRead: [],
+				allowWrite: ["."],
+				denyWrite: [],
+			},
+		});
+
+		const { sessionStart, toolCall } = captureHandlers(false);
+		const ctx = {
+			hasUI: false,
+			cwd,
+			ui: { notify: vi.fn(), setStatus: vi.fn(), theme: { fg: vi.fn((_: string, text: string) => text) } },
+			theme: { fg: vi.fn((_: string, text: string) => text) },
+		} as unknown as ExtensionContext;
+
+		await sessionStart({ type: "session_start" }, ctx);
+
+		const result = await toolCall(makeEvent("write", { path: "/outside/file.txt" }), ctx);
+		expect(result).toEqual({ block: true, reason: expect.stringContaining("not under any allowed") });
+	});
+
+	it("never prompts for denyWrite matches", async () => {
+		const cwd = "/work";
+		mockConfig(cwd, {
+			enabled: true,
+			filesystem: {
+				denyRead: [],
+				allowWrite: ["."],
+				denyWrite: [".env"],
+			},
+		});
+
+		const { sessionStart, toolCall } = captureHandlers(false);
+		const selectFn = vi.fn();
+		const ctx = {
+			hasUI: true,
+			cwd,
+			ui: {
+				notify: vi.fn(),
+				setStatus: vi.fn(),
+				select: selectFn,
+				theme: { fg: vi.fn((_: string, text: string) => text) },
+			},
+			theme: { fg: vi.fn((_: string, text: string) => text) },
+		} as unknown as ExtensionContext;
+
+		await sessionStart({ type: "session_start" }, ctx);
+
+		const result = await toolCall(makeEvent("write", { path: "/work/.env" }), ctx);
+		expect(result).toEqual({ block: true, reason: expect.stringContaining(".env") });
+		expect(selectFn).not.toHaveBeenCalled();
+	});
+
+	it("session-allowed write path bypasses prompt on second access", async () => {
+		const cwd = "/work";
+		mockConfig(cwd, {
+			enabled: true,
+			filesystem: {
+				denyRead: [],
+				allowWrite: ["."],
+				denyWrite: [],
+			},
+		});
+
+		const { sessionStart, toolCall } = captureHandlers(false);
+		const selectFn = vi.fn(async () => "Allow for this session only");
+		const ctx = {
+			hasUI: true,
+			cwd,
+			ui: {
+				notify: vi.fn(),
+				setStatus: vi.fn(),
+				select: selectFn,
+				theme: { fg: vi.fn((_: string, text: string) => text) },
+			},
+			theme: { fg: vi.fn((_: string, text: string) => text) },
+		} as unknown as ExtensionContext;
+
+		await sessionStart({ type: "session_start" }, ctx);
+
+		// First access — prompts
+		await toolCall(makeEvent("write", { path: "/outside/file.txt" }), ctx);
+		expect(selectFn).toHaveBeenCalledTimes(1);
+
+		// Second access — should bypass prompt
+		selectFn.mockClear();
+		const result = await toolCall(makeEvent("write", { path: "/outside/file.txt" }), ctx);
+		expect(result).toBeUndefined();
+		expect(selectFn).not.toHaveBeenCalled();
+	});
+
+	it("passes SandboxAskCallback to initialize when UI available", async () => {
+		const cwd = "/work";
+		mockConfig(cwd, {
+			enabled: true,
+			filesystem: {
+				denyRead: [],
+				allowWrite: ["."],
+				denyWrite: [],
+			},
+		});
+
+		const { sessionStart } = captureHandlers(false);
+		const ctx = {
+			hasUI: true,
+			cwd,
+			ui: {
+				notify: vi.fn(),
+				setStatus: vi.fn(),
+				select: vi.fn(),
+				theme: { fg: vi.fn((_: string, text: string) => text) },
+			},
+			theme: { fg: vi.fn((_: string, text: string) => text) },
+		} as unknown as ExtensionContext;
+
+		await sessionStart({ type: "session_start" }, ctx);
+
+		expect(sandboxManager.initialize).toHaveBeenCalledWith(expect.any(Object), expect.any(Function));
+	});
+
+	it("does not pass SandboxAskCallback when no UI", async () => {
+		const cwd = "/work";
+		mockConfig(cwd, {
+			enabled: true,
+			filesystem: {
+				denyRead: [],
+				allowWrite: ["."],
+				denyWrite: [],
+			},
+		});
+
+		const { sessionStart } = captureHandlers(false);
+		const ctx = {
+			hasUI: false,
+			cwd,
+			ui: { notify: vi.fn(), setStatus: vi.fn(), theme: { fg: vi.fn((_: string, text: string) => text) } },
+			theme: { fg: vi.fn((_: string, text: string) => text) },
+		} as unknown as ExtensionContext;
+
+		await sessionStart({ type: "session_start" }, ctx);
+
+		expect(sandboxManager.initialize).toHaveBeenCalledWith(expect.any(Object), undefined);
 	});
 });
