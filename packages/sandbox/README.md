@@ -3,6 +3,15 @@
 OS-level and application-level sandboxing for the pi coding agent, restricting filesystem access
 and network calls.
 
+## Origin
+
+Based on the [original sandbox extension](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent/examples/extensions/sandbox)
+from pi-mono. The original only sandboxes `bash` commands at the OS level — pi's built-in tools
+(`read`, `write`, `edit`, `grep`, `find`, `ls`) bypass the OS sandbox entirely because they run
+in-process via Node.js `fs`, not through a shell. This extension closes that gap by adding a
+**tool guard** layer that intercepts all built-in tool calls and enforces the same filesystem
+restrictions before they reach the `fs` module.
+
 ## Use Case
 
 LLM agents execute arbitrary tool calls. Without sandboxing, the agent can:
