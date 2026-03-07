@@ -127,6 +127,9 @@ function deepMerge(base: SandboxConfig, overrides: Partial<SandboxConfig>): Sand
 	if (overrides.enableWeakerNetworkIsolation !== undefined) {
 		result.enableWeakerNetworkIsolation = overrides.enableWeakerNetworkIsolation;
 	}
+	if (overrides.allowPty !== undefined) {
+		result.allowPty = overrides.allowPty;
+	}
 
 	return result;
 }
@@ -362,16 +365,43 @@ export default function (pi: ExtensionAPI) {
 				"Status:",
 				`  OS sandbox: ${osStatus}`,
 				`  Tool guard: ${guardStatus}`,
+			];
+			if (activeConfig.allowPty !== undefined) lines.push(`  Allow PTY: ${activeConfig.allowPty}`);
+			if (activeConfig.enableWeakerNestedSandbox !== undefined)
+				lines.push(`  Weaker nested sandbox: ${activeConfig.enableWeakerNestedSandbox}`);
+			if (activeConfig.enableWeakerNetworkIsolation !== undefined)
+				lines.push(`  Weaker network isolation: ${activeConfig.enableWeakerNetworkIsolation}`);
+
+			lines.push(
 				"",
 				"Network:",
 				`  Allowed: ${activeConfig.network?.allowedDomains?.join(", ") || "(none)"}`,
 				`  Denied: ${activeConfig.network?.deniedDomains?.join(", ") || "(none)"}`,
+			);
+			if (activeConfig.network?.allowLocalBinding !== undefined)
+				lines.push(`  Local binding: ${activeConfig.network.allowLocalBinding}`);
+			if (activeConfig.network?.allowUnixSockets?.length)
+				lines.push(`  Unix sockets: ${activeConfig.network.allowUnixSockets.join(", ")}`);
+			if (activeConfig.network?.allowAllUnixSockets !== undefined)
+				lines.push(`  All unix sockets: ${activeConfig.network.allowAllUnixSockets}`);
+
+			lines.push(
 				"",
 				"Filesystem:",
 				`  Deny Read: ${activeConfig.filesystem?.denyRead?.join(", ") || "(none)"}`,
 				`  Allow Write: ${activeConfig.filesystem?.allowWrite?.join(", ") || "(none)"}`,
 				`  Deny Write: ${activeConfig.filesystem?.denyWrite?.join(", ") || "(none)"}`,
-			];
+			);
+			if (activeConfig.filesystem?.allowGitConfig !== undefined)
+				lines.push(`  Allow git config: ${activeConfig.filesystem.allowGitConfig}`);
+
+			if (activeConfig.ignoreViolations && Object.keys(activeConfig.ignoreViolations).length > 0) {
+				lines.push("", "Ignore Violations:");
+				for (const [pattern, paths] of Object.entries(activeConfig.ignoreViolations)) {
+					lines.push(`  ${pattern}: ${paths.join(", ")}`);
+				}
+			}
+
 			ctx.ui.notify(lines.join("\n"), "info");
 		},
 	});
