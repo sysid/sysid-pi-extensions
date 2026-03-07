@@ -145,6 +145,14 @@ create-release-vim-editor: check-github-token
 		gh release create "vim-editor-v$$VERSION" --generate-notes; \
 	fi
 
+.PHONY: publish-sandbox
+publish-sandbox: check  ## publish sandbox extension to npm
+	cd packages/sandbox && npm publish --access public
+
+.PHONY: publish-vim-editor
+publish-vim-editor: check  ## publish vim-editor extension to npm
+	cd packages/vim-editor && npm publish --access public
+
 .PHONY: check-github-token
 check-github-token:  ## check if GITHUB_TOKEN is set
 	@if [ -z "$$GITHUB_TOKEN" ]; then \

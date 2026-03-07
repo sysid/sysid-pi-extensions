@@ -1,7 +1,8 @@
 # Sandbox Extension
 
 OS-level and application-level sandboxing for the pi coding agent, restricting filesystem access
-and network calls.
+and network calls. Includes interactive permission prompts that let you grant access for a session,
+project, or globally — without restarting pi.
 
 ## Origin
 
@@ -27,25 +28,34 @@ built-in tools are constrained.
 ## Security Boundary
 
 ```
-┌──────────────────────────────────────────────────┐
-│                    LLM Agent                     │
-│                                                  │
-│   bash commands            built-in tools        │
-│   (cat, curl, rm, ...)     (read, write, edit,   │
-│                             grep, find, ls)      │
-│         │                        │               │
-│         ▼                        ▼               │
-│   ┌───────────┐          ┌─────────────┐         │
-│   │  OS-Level │          │  Path Guard │         │
-│   │  Sandbox  │          │  (tool_call │         │
-│   │           │          │   handler)  │         │
-│   │ sandbox-  │          │             │         │
-│   │ exec/bwrap│          │ path-guard  │         │
-│   └───────────┘          │ .ts         │         │
-│         │                └─────────────┘         │
-│         ▼                        ▼               │
-│               Filesystem / Network               │
-└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                      LLM Agent                       │
+│                                                      │
+│   bash commands              built-in tools          │
+│   (cat, curl, rm, ...)       (read, write, edit,     │
+│                               grep, find, ls)        │
+│         │                          │                 │
+│         ▼                          ▼                 │
+│   ┌───────────┐            ┌─────────────┐           │
+│   │  OS-Level │            │  Path Guard │           │
+│   │  Sandbox  │            │  (tool_call │           │
+│   │           │            │   handler)  │           │
+│   │ sandbox-  │            │             │           │
+│   │ exec/bwrap│            │ path-guard  │           │
+│   └───────────┘            │ .ts         │           │
+│         │                  └──────┬──────┘           │
+│         │                        │                   │
+│         │   ┌────────────────────┴──────────────┐    │
+│         │   │  Interactive Prompts (prompt.ts)  │    │
+│         │   │  ┌─ Abort (keep blocked)          │    │
+│         │   │  ├─ Allow for session (in-memory) │    │
+│         │   │  ├─ Allow for project (.pi/)      │    │
+│         │   │  └─ Allow for all projects (~/)   │    │
+│         │   └───────────────────────────────────┘    │
+│         │                        │                   │
+│         ▼                        ▼                   │
+│                 Filesystem / Network                 │
+└──────────────────────────────────────────────────────┘
 ```
 
 **Layer 1 — OS sandbox** (`sandbox-exec` on macOS, `bubblewrap` on Linux): Kernel-enforced
@@ -68,8 +78,49 @@ built-in file tools before they reach the Node.js `fs` module. Enforces the same
 | `find` | Path guard | `tool_call` handler checks `denyRead` directories |
 | `ls` | Path guard | `tool_call` handler checks `denyRead` directories |
 | User `!` bash | OS sandbox | `user_bash` event handler wraps command |
+| Network (bash) | OS sandbox + prompt | `SandboxAskCallback` prompts for unknown domains |
 
-## Setup
+### Interactive Permission Prompts
+
+When a write or network block is triggered and the UI is available, the user is prompted with four
+options:
+
+| Option | Effect |
+|--------|--------|
+| **Abort** | Keep blocked, no changes |
+| **Allow for this session** | Stored in memory only — resets when pi restarts |
+| **Allow for this project** | Written to `<cwd>/.pi/sandbox.json` |
+| **Allow for all projects** | Written to `~/.pi/agent/sandbox.json` |
+
+Session allowances are held in closure-scoped JavaScript memory. The agent cannot read or modify
+them. They are never written to disk and are reset when the extension reloads or pi restarts.
+
+### What Gets Prompted vs. Hard-Blocked
+
+| Rule | Behaviour |
+|------|-----------|
+| Path not in `allowWrite` | **Prompted** (write/edit tools) |
+| Domain not in `allowedDomains` | **Prompted** (via `SandboxAskCallback` for bash network) |
+| Path in `denyRead` | Hard-blocked, no prompt |
+| Path in `denyWrite` | Hard-blocked, no prompt |
+| Domain in `deniedDomains` | Hard-blocked at OS level, no prompt |
+| No UI available (`hasUI=false`) | Hard-blocked, no prompt |
+
+After granting access, the sandbox config is hot-reloaded via `SandboxManager.updateConfig()`
+without restarting pi.
+
+## Installation
+
+### From npm
+
+```bash
+npm install @sysid/pi-sandbox-extended
+pi -e @sysid/pi-sandbox-extended
+# or
+pi install npm:@sysid/pi-sandbox-extended
+```
+
+### From source
 
 1. Clone this repo
 2. Run `npm install` at the repo root
@@ -231,8 +282,9 @@ enforced atomically by the kernel.
 **Custom tools**: Only built-in tools (`bash`, `read`, `write`, `edit`, `grep`, `find`, `ls`) are
 guarded. Tools registered by other extensions are not intercepted by the path guard.
 
-**Config reload**: Configuration is loaded once at session start. Changes to `sandbox.json` during
-a session require restarting pi.
+**Config reload**: Configuration is loaded at session start and re-read when a permission prompt
+grants project or global access. Manual edits to `sandbox.json` during a session are not picked up
+until the next session or the next interactive prompt grant.
 
 **Pattern matching**: `denyWrite` uses simple basename patterns (literal, `*.ext`, `prefix.*`).
 Full glob or regex patterns are not supported. `denyRead` uses directory containment, not filename
@@ -251,3 +303,6 @@ reinstall outside of a sandbox.
 ## Ackowledgements
 Based on code from [badlogic/pi-mono](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/examples/extensions/sandbox/index.ts)
 by Mario Zechner, used under the [MIT License](https://github.com/badlogic/pi-mono/blob/main/LICENSE).
+
+And
+[carderne/pi-sandbox](https://github.com/carderne/pi-sandbox) by Chris Arderne, used under the [MIT License](https://github.com/carderne/pi-sandbox/blob/main/LICENSE)

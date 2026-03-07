@@ -1,11 +1,22 @@
 {
-	"name": "pi-extension-vim-editor",
-	"private": true,
+	"name": "@sysid/pi-vim",
 	"version": "1.0.1",
 	"type": "module",
+	"description": "Modal vim editing extension for the pi coding agent",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sysid/sysid-pi-extensions",
+		"directory": "packages/vim-editor"
+	},
 	"pi": {
 		"extensions": ["./index.ts"]
 	},
+	"files": [
+		"*.ts",
+		"!*.test.ts",
+		"README.md"
+	],
 	"peerDependencies": {
 		"@mariozechner/pi-coding-agent": "*",
 		"@mariozechner/pi-tui": "*"
