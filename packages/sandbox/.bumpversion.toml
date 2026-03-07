@@ -1,0 +1,15 @@
+[tool.bumpversion]
+current_version = "1.0.0"
+commit = true
+tag = true
+tag_name = "sandbox-v{new_version}"
+tag_message = "Bump sandbox version: {current_version} → {new_version}"
+message = "Bump sandbox version: {current_version} → {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "VERSION"
+
+[[tool.bumpversion.files]]
+filename = "package.json"
+search = "\"version\": \"{current_version}\""
+replace = "\"version\": \"{new_version}\""
