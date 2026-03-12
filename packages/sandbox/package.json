@@ -1,6 +1,6 @@
 {
 	"name": "@sysid/pi-sandbox",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"type": "module",
 	"description": "OS + app sandboxing extension for the pi coding agent",
 	"license": "MIT",
