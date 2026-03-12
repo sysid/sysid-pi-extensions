@@ -45,6 +45,7 @@ import { type SandboxAskCallback, SandboxManager, type SandboxRuntimeConfig } fr
 import {
 	type BashOperations,
 	createBashTool,
+    getAgentDir,
 	type ExtensionAPI,
 	isToolCallEventType,
 } from "@mariozechner/pi-coding-agent";
@@ -69,10 +70,6 @@ const DEFAULT_CONFIG: SandboxConfig = {
 			"registry.yarnpkg.com",
 			"pypi.org",
 			"*.pypi.org",
-			"github.com",
-			"*.github.com",
-			"api.github.com",
-			"raw.githubusercontent.com",
 		],
 		deniedDomains: [],
 	},
@@ -85,7 +82,8 @@ const DEFAULT_CONFIG: SandboxConfig = {
 
 function loadConfig(cwd: string): SandboxConfig {
 	const projectConfigPath = join(cwd, ".pi", "sandbox.json");
-	const globalConfigPath = join(homedir(), ".pi", "agent", "sandbox.json");
+	// const globalConfigPath = join(homedir(), ".pi", "agent", "sandbox.json");
+    const globalConfigPath = join(getAgentDir(), "sandbox.json");
 
 	let globalConfig: Partial<SandboxConfig> = {};
 	let projectConfig: Partial<SandboxConfig> = {};
