@@ -1,5 +1,7 @@
 # Sandbox Extension
 
+Background: [Your Agent Has Root | sysid blog](https://sysid.github.io/your-agent-has-root/)
+
 OS-level and application-level sandboxing for the pi coding agent, restricting filesystem access
 and network calls. Includes interactive permission prompts that let you grant access for a session,
 project, or globally — without restarting pi.

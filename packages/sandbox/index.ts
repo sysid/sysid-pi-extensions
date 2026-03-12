@@ -45,8 +45,8 @@ import { type SandboxAskCallback, SandboxManager, type SandboxRuntimeConfig } fr
 import {
 	type BashOperations,
 	createBashTool,
-    getAgentDir,
 	type ExtensionAPI,
+	getAgentDir,
 	isToolCallEventType,
 } from "@mariozechner/pi-coding-agent";
 import { expandPath, isReadBlocked, isUnderDirectory, isWriteBlocked } from "./path-guard.js";
@@ -83,7 +83,7 @@ const DEFAULT_CONFIG: SandboxConfig = {
 function loadConfig(cwd: string): SandboxConfig {
 	const projectConfigPath = join(cwd, ".pi", "sandbox.json");
 	// const globalConfigPath = join(homedir(), ".pi", "agent", "sandbox.json");
-    const globalConfigPath = join(getAgentDir(), "sandbox.json");
+	const globalConfigPath = join(getAgentDir(), "sandbox.json");
 
 	let globalConfig: Partial<SandboxConfig> = {};
 	let projectConfig: Partial<SandboxConfig> = {};

@@ -1,11 +1,22 @@
 {
-	"name": "pi-extension-access-guard",
-	"private": true,
+	"name": "@sysid/pi-access-guard",
 	"version": "1.0.1",
 	"type": "module",
+	"description": "Path-based access control extension for the pi coding agent",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sysid/sysid-pi-extensions",
+		"directory": "packages/access-guard"
+	},
 	"pi": {
 		"extensions": ["./index.ts"]
 	},
+	"files": [
+		"*.ts",
+		"!*.test.ts",
+		"README.md"
+	],
 	"peerDependencies": {
 		"@mariozechner/pi-coding-agent": "*"
 	},

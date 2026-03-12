@@ -62,19 +62,19 @@ use-official-sandbox:  ## switch sandbox-runtime to official npm package
 VERSIONING:  ## ############################################################
 
 .PHONY: bump-sandbox-patch
-bump-sandbox-patch: check-github-token  ## bump sandbox patch version, tag, release
+bump-sandbox-patch: check-github-token use-official-sandbox  ## bump sandbox patch version, tag, release
 	cd packages/sandbox && bump-my-version bump --commit --tag patch
 	git push && git push --tags
 	@$(MAKE) create-release-sandbox
 
 .PHONY: bump-sandbox-minor
-bump-sandbox-minor: check-github-token  ## bump sandbox minor version, tag, release
+bump-sandbox-minor: check-github-token use-official-sandbox  ## bump sandbox minor version, tag, release
 	cd packages/sandbox && bump-my-version bump --commit --tag minor
 	git push && git push --tags
 	@$(MAKE) create-release-sandbox
 
 .PHONY: bump-sandbox-major
-bump-sandbox-major: check-github-token  ## bump sandbox major version, tag, release
+bump-sandbox-major: check-github-token use-official-sandbox  ## bump sandbox major version, tag, release
 	cd packages/sandbox && bump-my-version bump --commit --tag major
 	git push && git push --tags
 	@$(MAKE) create-release-sandbox
@@ -89,33 +89,33 @@ create-release-sandbox: check-github-token
 		gh release create "sandbox-v$$VERSION" --generate-notes; \
 	fi
 
-.PHONY: bump-access-guard-patch
-bump-access-guard-patch: check-github-token  ## bump access-guard patch version, tag, release
-	cd packages/access-guard && bump-my-version bump --commit --tag patch
-	git push && git push --tags
-	@$(MAKE) create-release-access-guard
-
-.PHONY: bump-access-guard-minor
-bump-access-guard-minor: check-github-token  ## bump access-guard minor version, tag, release
-	cd packages/access-guard && bump-my-version bump --commit --tag minor
-	git push && git push --tags
-	@$(MAKE) create-release-access-guard
-
-.PHONY: bump-access-guard-major
-bump-access-guard-major: check-github-token  ## bump access-guard major version, tag, release
-	cd packages/access-guard && bump-my-version bump --commit --tag major
-	git push && git push --tags
-	@$(MAKE) create-release-access-guard
-
-.PHONY: create-release-access-guard
-create-release-access-guard: check-github-token
-	@VERSION=$$(cat packages/access-guard/VERSION); \
-	if ! command -v gh &>/dev/null; then \
-		echo "gh CLI not installed. Please create the release manually."; exit 1; \
-	else \
-		echo "Creating GitHub release for access-guard-v$$VERSION"; \
-		gh release create "access-guard-v$$VERSION" --generate-notes; \
-	fi
+# .PHONY: bump-access-guard-patch
+# bump-access-guard-patch: check-github-token  ## bump access-guard patch version, tag, release
+# 	cd packages/access-guard && bump-my-version bump --commit --tag patch
+# 	git push && git push --tags
+# 	@$(MAKE) create-release-access-guard
+#
+# .PHONY: bump-access-guard-minor
+# bump-access-guard-minor: check-github-token  ## bump access-guard minor version, tag, release
+# 	cd packages/access-guard && bump-my-version bump --commit --tag minor
+# 	git push && git push --tags
+# 	@$(MAKE) create-release-access-guard
+#
+# .PHONY: bump-access-guard-major
+# bump-access-guard-major: check-github-token  ## bump access-guard major version, tag, release
+# 	cd packages/access-guard && bump-my-version bump --commit --tag major
+# 	git push && git push --tags
+# 	@$(MAKE) create-release-access-guard
+#
+# .PHONY: create-release-access-guard
+# create-release-access-guard: check-github-token
+# 	@VERSION=$$(cat packages/access-guard/VERSION); \
+# 	if ! command -v gh &>/dev/null; then \
+# 		echo "gh CLI not installed. Please create the release manually."; exit 1; \
+# 	else \
+# 		echo "Creating GitHub release for access-guard-v$$VERSION"; \
+# 		gh release create "access-guard-v$$VERSION" --generate-notes; \
+# 	fi
 
 .PHONY: bump-vim-editor-patch
 bump-vim-editor-patch: check-github-token  ## bump vim-editor patch version, tag, release

@@ -1,11 +1,23 @@
 {
-	"name": "pi-extension-sandbox",
-	"private": true,
+	"name": "@sysid/pi-sandbox",
 	"version": "1.0.3",
 	"type": "module",
+	"description": "OS + app sandboxing extension for the pi coding agent",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sysid/sysid-pi-extensions",
+		"directory": "packages/sandbox"
+	},
 	"pi": {
 		"extensions": ["./index.ts"]
 	},
+	"files": [
+		"*.ts",
+		"!*.test.ts",
+		"README.md",
+		"VERSION"
+	],
 	"scripts": {
 		"test": "vitest run --config ../../vitest.config.ts",
 		"clean": "echo 'nothing to clean'",

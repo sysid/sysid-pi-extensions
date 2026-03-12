@@ -2,6 +2,8 @@
 
 Custom extensions for the [pi coding agent](https://github.com/nicholasgasior/pi-mono) — OS sandboxing, access control, and modal editing.
 
+Background: [Your Agent Has Root | sysid blog](https://sysid.github.io/your-agent-has-root/)
+
 ## Extensions
 
 | Package | Description |
