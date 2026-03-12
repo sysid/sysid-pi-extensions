@@ -1,6 +1,6 @@
 {
 	"name": "@sysid/pi-vim",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"type": "module",
 	"description": "Modal vim editing extension for the pi coding agent",
 	"license": "MIT",
