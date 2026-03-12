@@ -1,4 +1,4 @@
-# sysid-pi-extensions
+# pi-extensions
 
 Custom extensions for the [pi coding agent](https://github.com/nicholasgasior/pi-mono) — OS sandboxing, access control, and modal editing.
 
@@ -44,7 +44,7 @@ See [HowTo.md](HowTo.md) for the full development guide.
 ## Project Structure
 
 ```
-sysid-pi-extensions/
+pi-extensions/
 ├── packages/
 │   ├── sandbox/          # OS + app sandboxing
 │   ├── access-guard/     # Path-based access control

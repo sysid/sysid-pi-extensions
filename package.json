@@ -1,5 +1,5 @@
 {
-	"name": "sysid-pi-extensions",
+	"name": "pi-extensions",
 	"private": true,
 	"type": "module",
 	"workspaces": ["packages/*"],

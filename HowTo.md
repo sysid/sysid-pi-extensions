@@ -11,8 +11,8 @@ A practical guide for working with this repo, aimed at TypeScript beginners who 
 ## Initial Setup
 
 ```bash
-git clone https://github.com/sysid/sysid-pi-extensions.git
-cd sysid-pi-extensions
+git clone https://github.com/sysid/pi-extensions.git
+cd pi-extensions
 npm install
 ```
 
@@ -222,7 +222,7 @@ export default function (pi: ExtensionAPI) {
 ## Repo Layout
 
 ```
-sysid-pi-extensions/
+pi-extensions/
 ├── packages/
 │   ├── sandbox/                      # OS + application sandboxing
 │   │   ├── index.ts                  # Main extension entry point
