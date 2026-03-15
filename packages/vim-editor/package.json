@@ -3,12 +3,23 @@
 	"version": "1.0.2",
 	"type": "module",
 	"description": "Modal vim editing extension for the pi coding agent",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "vim",
+    "editor"
+  ],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/sysid/pi-extensions",
 		"directory": "packages/vim-editor"
 	},
+  "author": "sysid <sysid@gmx.de>",
+  "bugs": {
+    "url": "https://github.com/sysid/pi-extensions/issues"
+  },
+  "homepage": "https://github.com/sysid/pi-extensions",
 	"pi": {
 		"extensions": ["./index.ts"]
 	},
