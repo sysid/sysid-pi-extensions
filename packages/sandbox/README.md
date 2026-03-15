@@ -27,6 +27,8 @@ LLM agents execute arbitrary tool calls. Without sandboxing, the agent can:
 This extension enforces restrictions at two independent layers so that both shell commands and
 built-in tools are constrained.
 
+![demo](./doc/demo.gif)
+
 ## Security Boundary
 
 ```
