@@ -6,7 +6,7 @@
  * bubblewrap on Linux).
  *
  * Config files (merged, project takes precedence):
- * - ~/.pi/agent/sandbox.json (global)
+ * - ~/.pi/agent/extensions/sandbox.json (global)
  * - <cwd>/.pi/sandbox.json (project-local)
  *
  * Example .pi/sandbox.json:
@@ -39,7 +39,6 @@
 
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { homedir } from "node:os";
 import { join } from "node:path";
 import { type SandboxAskCallback, SandboxManager, type SandboxRuntimeConfig } from "@anthropic-ai/sandbox-runtime";
 import {
@@ -70,6 +69,10 @@ const DEFAULT_CONFIG: SandboxConfig = {
 			"registry.yarnpkg.com",
 			"pypi.org",
 			"*.pypi.org",
+			"github.com",
+			"*.github.com",
+			"api.github.com",
+			"raw.githubusercontent.com",
 		],
 		deniedDomains: [],
 	},
@@ -83,7 +86,7 @@ const DEFAULT_CONFIG: SandboxConfig = {
 function loadConfig(cwd: string): SandboxConfig {
 	const projectConfigPath = join(cwd, ".pi", "sandbox.json");
 	// const globalConfigPath = join(homedir(), ".pi", "agent", "sandbox.json");
-	const globalConfigPath = join(getAgentDir(), "sandbox.json");
+	const globalConfigPath = join(getAgentDir(), "extensions", "sandbox.json");
 
 	let globalConfig: Partial<SandboxConfig> = {};
 	let projectConfig: Partial<SandboxConfig> = {};
@@ -222,7 +225,7 @@ export default function (pi: ExtensionAPI) {
 
 	function getConfigPaths(cwd: string) {
 		return {
-			globalPath: join(homedir(), ".pi", "agent", "sandbox.json"),
+			globalPath: join(getAgentDir(), "extensions", "sandbox.json"),
 			projectPath: join(cwd, ".pi", "sandbox.json"),
 		};
 	}

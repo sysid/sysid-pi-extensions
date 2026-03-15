@@ -92,7 +92,7 @@ options:
 | **Abort** | Keep blocked, no changes |
 | **Allow for this session** | Stored in memory only — resets when pi restarts |
 | **Allow for this project** | Written to `<cwd>/.pi/sandbox.json` |
-| **Allow for all projects** | Written to `~/.pi/agent/sandbox.json` |
+| **Allow for all projects** | Written to `~/.pi/agent/extensions/sandbox.json` |
 
 Session allowances are held in closure-scoped JavaScript memory. The agent cannot read or modify
 them. They are never written to disk and are reset when the extension reloads or pi restarts.
@@ -153,7 +153,7 @@ pi -e ./packages/sandbox --no-sandbox
 Config files are loaded and merged in order (later wins):
 
 1. Built-in defaults (see below)
-2. `~/.pi/agent/sandbox.json` (global)
+2. `~/.pi/agent/extensions/sandbox.json` (global)
 3. `<cwd>/.pi/sandbox.json` (project-local)
 
 ### Example `.pi/sandbox.json`
