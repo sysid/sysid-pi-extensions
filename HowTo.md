@@ -163,6 +163,18 @@ make lint-fix
 
 The project uses [Biome](https://biomejs.dev/) with tabs, indent width 3, line width 120 — matching pi-mono conventions.
 
+## Versioning
+
+Each extension is versioned independently using [semantic versioning](https://semver.org/).
+Git tags are prefixed with the package name (e.g. `sandbox-v1.2.0`).
+
+```bash
+make bump-sandbox-patch     # 1.0.0 → 1.0.1, tag, GitHub release
+make bump-sandbox-minor     # 1.0.0 → 1.1.0
+make bump-sandbox-major     # 1.0.0 → 2.0.0
+# Same pattern for access-guard and vim-editor
+```
+
 ## Type Checking (Optional)
 
 ```bash
