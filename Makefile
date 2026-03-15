@@ -145,12 +145,20 @@ create-release-vim-editor: check-github-token
 		gh release create "vim-editor-v$$VERSION" --generate-notes; \
 	fi
 
+.PHONY: check-npm-login
+check-npm-login:  ## check if logged into npm
+	@if ! npm whoami &>/dev/null; then \
+		echo "Not logged into npm. Run 'npm login' first."; \
+		exit 1; \
+	fi
+	@echo "npm: logged in as $$(npm whoami)"
+
 .PHONY: publish-sandbox
-publish-sandbox: check  ## publish sandbox extension to npm
+publish-sandbox: check check-npm-login  ## publish sandbox extension to npm
 	cd packages/sandbox && npm publish --access public
 
 .PHONY: publish-vim-editor
-publish-vim-editor: check  ## publish vim-editor extension to npm
+publish-vim-editor: check check-npm-login  ## publish vim-editor extension to npm
 	cd packages/vim-editor && npm publish --access public
 
 .PHONY: check-github-token
