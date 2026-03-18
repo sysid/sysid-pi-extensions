@@ -1,5 +1,5 @@
 [tool.bumpversion]
-current_version = "1.0.2"
+current_version = "1.0.3"
 commit = true
 tag = true
 tag_name = "vim-editor-v{new_version}"
