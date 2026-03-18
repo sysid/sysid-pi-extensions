@@ -3,12 +3,22 @@
 	"version": "1.0.5",
 	"type": "module",
 	"description": "OS + app sandboxing extension for the pi coding agent",
+  "keywords": [
+    "pi-package",
+    "pi-extension"
+  ],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/sysid/pi-extensions",
 		"directory": "packages/sandbox"
 	},
+  "author": "sysid <sysid@gmx.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sysid/pi-extensions/issues"
+  },
+  "homepage": "https://github.com/sysid/pi-extensions",
 	"pi": {
 		"extensions": ["./index.ts"]
 	},
