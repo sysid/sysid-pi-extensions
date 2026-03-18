@@ -45,7 +45,7 @@ install:  ## install all dependencies
 
 .PHONY: use-sysid-sandbox
 use-sysid-sandbox:  ## switch sandbox-runtime to sysid fork (local dev, patched SRT)
-	cd packages/sandbox && npm pkg set "dependencies.@anthropic-ai/sandbox-runtime"="github:sysid/sandbox-runtime#sysid"
+	cd packages/sandbox && npm pkg set "dependencies.@anthropic-ai/sandbox-runtime"="github:sysid/sandbox-runtime-improved#sysid"
 	npm install
 	git update-index --skip-worktree packages/sandbox/package.json
 	@echo "Switched to sysid fork. package.json hidden from git."

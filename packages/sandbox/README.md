@@ -304,7 +304,7 @@ files with the `com.apple.provenance` extended attribute. Subsequent sandboxed p
 reinstall outside of a sandbox.
 
 
-## Ackowledgements
+## Acknowledgments
 Based on code from [badlogic/pi-mono](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/examples/extensions/sandbox/index.ts)
 by Mario Zechner, used under the [MIT License](https://github.com/badlogic/pi-mono/blob/main/LICENSE).
 
