@@ -1,4 +1,7 @@
-# Vim Editor Extension
+<p align="left">
+  <img src="../../doc/pi-vim-logo.png" alt="pi-vim logo" width="300">
+</p>
+
 
 Modal vim editing for the pi coding agent. Replaces the default text input with a vim-like editor supporting normal and insert modes.
 

@@ -1,4 +1,6 @@
-# pi-extensions
+<p align="left">
+  <img src="doc/pi-extensions-logo.png" alt="pi-extensions logo" width="300">
+</p>
 
 Improved extensions for the [pi coding agent](https://github.com/nicholasgasior/pi-mono).
 

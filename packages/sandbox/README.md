@@ -1,4 +1,6 @@
-# Sandbox Extension
+<p align="left">
+  <img src="../../doc/pi-sandbox-logo.png" alt="pi-sandbox logo" width="300">
+</p>
 
 Background: [Your Agent Has Root | sysid blog](https://sysid.github.io/your-agent-has-root/)
 
