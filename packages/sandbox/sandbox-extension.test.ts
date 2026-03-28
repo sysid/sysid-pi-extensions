@@ -32,7 +32,6 @@ const { mockSandboxManager } = vi.hoisted(() => ({
 vi.mock("@sysid/sandbox-runtime-improved", () => ({ SandboxManager: mockSandboxManager }));
 
 import { existsSync, readFileSync } from "node:fs";
-import { SandboxManager } from "@sysid/sandbox-runtime-improved";
 import type {
 	ExtensionAPI,
 	ExtensionContext,
@@ -40,6 +39,7 @@ import type {
 	ToolCallEvent,
 	ToolCallEventResult,
 } from "@mariozechner/pi-coding-agent";
+import { SandboxManager } from "@sysid/sandbox-runtime-improved";
 import sandboxExtension from "./index.js";
 
 interface SandboxConfigFile {

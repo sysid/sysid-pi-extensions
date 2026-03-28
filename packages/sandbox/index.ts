@@ -40,7 +40,6 @@
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { type SandboxAskCallback, SandboxManager, type SandboxRuntimeConfig } from "@sysid/sandbox-runtime-improved";
 import {
 	type BashOperations,
 	createBashTool,
@@ -48,6 +47,7 @@ import {
 	getAgentDir,
 	isToolCallEventType,
 } from "@mariozechner/pi-coding-agent";
+import { type SandboxAskCallback, SandboxManager, type SandboxRuntimeConfig } from "@sysid/sandbox-runtime-improved";
 import { expandPath, isReadBlocked, isUnderDirectory, isWriteBlocked } from "./path-guard.js";
 import { type PromptChoice, promptDomainBlock, promptWriteBlock } from "./prompt.js";
 import { addDomainToConfig, addWritePathToConfig, createSessionState } from "./session-state.js";
