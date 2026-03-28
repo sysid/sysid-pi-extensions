@@ -3,23 +3,25 @@
 	"version": "1.0.6",
 	"type": "module",
 	"description": "OS + app sandboxing extension for the pi coding agent",
-  "keywords": [
-    "pi-package",
-    "pi-extension"
-  ],
+	"keywords": [
+		"pi-package",
+		"pi-extension"
+	],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/sysid/pi-extensions",
 		"directory": "packages/sandbox"
 	},
-  "author": "sysid <sysid@gmx.de>",
-  "bugs": {
-    "url": "https://github.com/sysid/pi-extensions/issues"
-  },
-  "homepage": "https://github.com/sysid/pi-extensions",
+	"author": "sysid <sysid@gmx.de>",
+	"bugs": {
+		"url": "https://github.com/sysid/pi-extensions/issues"
+	},
+	"homepage": "https://github.com/sysid/pi-extensions",
 	"pi": {
-		"extensions": ["./index.ts"]
+		"extensions": [
+			"./index.ts"
+		]
 	},
 	"files": [
 		"*.ts",
@@ -33,7 +35,7 @@
 		"build": "echo 'nothing to build'"
 	},
 	"dependencies": {
-		"@anthropic-ai/sandbox-runtime": "^0.0.38"
+		"@sysid/sandbox-runtime-improved": "^0.0.43-sysid"
 	},
 	"peerDependencies": {
 		"@mariozechner/pi-coding-agent": "*"

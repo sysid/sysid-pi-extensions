@@ -132,13 +132,6 @@ pi install npm:@sysid/pi-sandbox-extended
 2. Run `npm install` at the repo root
 3. Linux additionally requires: `bubblewrap`, `socat`, `ripgrep`
 
-To use a custom fork of `@anthropic-ai/sandbox-runtime` instead of the official npm package:
-
-```bash
-make use-sysid-sandbox    # switch to sysid fork (hides change from git)
-make use-official-sandbox  # switch back to official npm package
-```
-
 ## Usage
 
 ```bash
@@ -187,9 +180,9 @@ Config files are loaded and merged in order (later wins):
 | `filesystem.denyRead` | `string[]` | Directory paths the agent cannot read from. Supports `~` and `.` expansion. |
 | `filesystem.allowWrite` | `string[]` | Directory paths the agent can write to. Default-deny: writes outside these paths are blocked. Supports `~` and `.` expansion. |
 | `filesystem.denyWrite` | `string[]` | Filename patterns the agent cannot write, even inside allowed directories. Takes precedence over `allowWrite`. |
-| `ignoreViolations` | `Record<string, string[]>` | Passed to `@anthropic-ai/sandbox-runtime`. Suppress specific OS-level violation categories. |
-| `enableWeakerNestedSandbox` | `boolean` | Passed to `@anthropic-ai/sandbox-runtime`. Allow weaker nested sandbox profiles. |
-| `enableWeakerNetworkIsolation` | `boolean` | Passed to `@anthropic-ai/sandbox-runtime`. Allows macOS `com.apple.trustd.agent` for TLS certificate validation (needed by tools like `gh` that fail with `x509: OSStatus -26276` under strict network isolation). |
+| `ignoreViolations` | `Record<string, string[]>` | Passed to `@sysid/sandbox-runtime-improved`. Suppress specific OS-level violation categories. |
+| `enableWeakerNestedSandbox` | `boolean` | Passed to `@sysid/sandbox-runtime-improved`. Allow weaker nested sandbox profiles. |
+| `enableWeakerNetworkIsolation` | `boolean` | Passed to `@sysid/sandbox-runtime-improved`. Allows macOS `com.apple.trustd.agent` for TLS certificate validation (needed by tools like `gh` that fail with `x509: OSStatus -26276` under strict network isolation). |
 
 ### Default Configuration
 

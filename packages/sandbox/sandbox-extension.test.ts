@@ -19,8 +19,7 @@ vi.mock("node:fs", async () => {
 	};
 });
 
-// In this monorepo, @anthropic-ai/sandbox-runtime is hoisted to root node_modules,
-// so a single mock path is sufficient (no dual-mock needed).
+// Mock the sandbox runtime
 const { mockSandboxManager } = vi.hoisted(() => ({
 	mockSandboxManager: {
 		initialize: vi.fn(),
@@ -30,10 +29,10 @@ const { mockSandboxManager } = vi.hoisted(() => ({
 	},
 }));
 
-vi.mock("@anthropic-ai/sandbox-runtime", () => ({ SandboxManager: mockSandboxManager }));
+vi.mock("@sysid/sandbox-runtime-improved", () => ({ SandboxManager: mockSandboxManager }));
 
 import { existsSync, readFileSync } from "node:fs";
-import { SandboxManager } from "@anthropic-ai/sandbox-runtime";
+import { SandboxManager } from "@sysid/sandbox-runtime-improved";
 import type {
 	ExtensionAPI,
 	ExtensionContext,

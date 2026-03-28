@@ -1,7 +1,7 @@
 /**
  * Sandbox Extension - OS-level sandboxing for bash commands
  *
- * Uses @anthropic-ai/sandbox-runtime to enforce filesystem and network
+ * Uses @sysid/sandbox-runtime-improved to enforce filesystem and network
  * restrictions on bash commands at the OS level (sandbox-exec on macOS,
  * bubblewrap on Linux).
  *
@@ -40,7 +40,7 @@
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { type SandboxAskCallback, SandboxManager, type SandboxRuntimeConfig } from "@anthropic-ai/sandbox-runtime";
+import { type SandboxAskCallback, SandboxManager, type SandboxRuntimeConfig } from "@sysid/sandbox-runtime-improved";
 import {
 	type BashOperations,
 	createBashTool,

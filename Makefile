@@ -62,19 +62,19 @@ use-official-sandbox:  ## switch sandbox-runtime to official npm package
 VERSIONING:  ## ############################################################
 
 .PHONY: bump-sandbox-patch
-bump-sandbox-patch: check-github-token use-official-sandbox  ## bump sandbox patch version, tag, release
+bump-sandbox-patch: check-github-token  ## bump sandbox patch version, tag, release
 	cd packages/sandbox && bump-my-version bump --commit --tag patch
 	git push && git push --tags
 	@$(MAKE) create-release-sandbox
 
 .PHONY: bump-sandbox-minor
-bump-sandbox-minor: check-github-token use-official-sandbox  ## bump sandbox minor version, tag, release
+bump-sandbox-minor: check-github-token  ## bump sandbox minor version, tag, release
 	cd packages/sandbox && bump-my-version bump --commit --tag minor
 	git push && git push --tags
 	@$(MAKE) create-release-sandbox
 
 .PHONY: bump-sandbox-major
-bump-sandbox-major: check-github-token use-official-sandbox  ## bump sandbox major version, tag, release
+bump-sandbox-major: check-github-token  ## bump sandbox major version, tag, release
 	cd packages/sandbox && bump-my-version bump --commit --tag major
 	git push && git push --tags
 	@$(MAKE) create-release-sandbox

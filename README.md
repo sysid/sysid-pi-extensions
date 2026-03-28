@@ -8,7 +8,6 @@ Improved extensions for the [pi coding agent](https://github.com/nicholasgasior/
 ## [`sandbox`](packages/sandbox/)
 - Integrated OS- and APP-level sandboxing with configurable filesystem and network restrictions.
 - See also: [Your Agent Has Root | sysid blog](https://sysid.github.io/your-agent-has-root/)
-- requires `@anthropic-ai/sandbox-runtime`.
 
 ```bash
 pi install npm:@sysid/pi-sandbox-extended
