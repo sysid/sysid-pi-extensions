@@ -56,6 +56,14 @@ describe("path-guard", () => {
 		it("should return true for deeply nested children", () => {
 			expect(isUnderDirectory("/home/user/.ssh/keys/backup/id_rsa", "/home/user/.ssh")).toBe(true);
 		});
+
+		it("should return true when directory is root /", () => {
+			expect(isUnderDirectory("/home/user", "/")).toBe(true);
+		});
+
+		it("should return true for root directory matching itself", () => {
+			expect(isUnderDirectory("/", "/")).toBe(true);
+		});
 	});
 
 	describe("matchesFilePattern", () => {

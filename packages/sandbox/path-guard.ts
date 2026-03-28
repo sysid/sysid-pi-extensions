@@ -41,7 +41,8 @@ export function isUnderDirectory(filePath: string, dirPath: string): boolean {
 	const normalizedDir = resolve(dirPath);
 
 	// First check without realpath (handles non-existent paths)
-	if (normalizedFile === normalizedDir || normalizedFile.startsWith(`${normalizedDir}/`)) {
+	const dirPrefix = normalizedDir === "/" ? "/" : `${normalizedDir}/`;
+	if (normalizedFile === normalizedDir || normalizedFile.startsWith(dirPrefix)) {
 		return true;
 	}
 
@@ -49,7 +50,8 @@ export function isUnderDirectory(filePath: string, dirPath: string): boolean {
 	try {
 		const realFile = realpathSync(normalizedFile);
 		const realDir = realpathSync(normalizedDir);
-		return realFile === realDir || realFile.startsWith(`${realDir}/`);
+		const realDirPrefix = realDir === "/" ? "/" : `${realDir}/`;
+		return realFile === realDir || realFile.startsWith(realDirPrefix);
 	} catch {
 		return false;
 	}
