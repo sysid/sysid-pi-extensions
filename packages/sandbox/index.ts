@@ -396,6 +396,9 @@ export default function (pi: ExtensionAPI) {
 			: undefined;
 
 		try {
+			// Reset any stale state from a previous session (e.g. after /new)
+			try { await SandboxManager.reset(); } catch {}
+
 			await SandboxManager.initialize(
 				{
 					network: activeConfig.network,
